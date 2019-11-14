@@ -7,4 +7,36 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(googlesheets4)
+library(tidyverse)
+library(broom)
 ```
+
+```{r load data, echo = FALSE}
+sheets_deauth()
+x <- read_sheet(ss = "1QA_Xv9tAbKhwFdQpnVa2hTjhEdg5zAl4WY5EVanWSo0")
+```
+
+Explain dvote by dem_adv
+
+```{r}
+x %>%
+  ggplot(aes(x = dem_adv, y = dvote)) +
+    geom_jitter(width = 0.1, height = 0.1, alpha = 0.05) +
+    geom_smooth(method = "lm", se = FALSE)
+```
+explain dvote by female using a glm
+
+```{r}
+female_model <- glm(data = x, formula = dvote ~ female, family = "binomial")
+
+print(female_model)
+summary(female_model)
+```
+```{r}
+x %>%
+  ggplot(aes(x = female, y = dvote)) + 
+    geom_jitter(height = 0.1, width = 0.1, alpha = 0.05) + 
+    geom_smooth(method = "glm", method.args = list(family = "binomial"), se = FALSE)
+```
+
